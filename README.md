@@ -6,24 +6,31 @@
 2. Test fails
 3. Write code to make the test pass
 4. Test passes
-5. Refactoring
+5. Refactor code
 6. Repeat
+
+We already do this, just not in the right order.
 
 ### BDD
 
-Includes extra steps to communicate with the non-technical participants.
+Includes extra steps to communicate with the non-technical participants. It can be useful when writing site functionality in collaboration with somebody who isn't very familiar with a codebase.
 
 ### Unit tests
 
 Testing individual components of the software. Some people like to test every single thing possible.
+  * We don't have any view tests, it's debatable whether they are needed or not.
+
+Something that we can improve on is unit test isolation. We don't want to double test stuff that we have tested in other places.
 
 ### Integration tests
 
-Testing combined components of the software. We could use more of these.
+Testing combined components of the software. We could use more of these. With RSpec nested context, it is possible to make a tree-like structure of scenarios.
+
+Outside of integration tests, our test coverage isn't bad, but there's certainly room for improvement. Some parts of code with heady interaction with third party API aren't covered by tests (`/app/models/candidate_interview.rb` for example).
 
 ## RSpec
 
-RSpec is a Ruby testing framework. It's a domain specific language (DSL) - not pure ruby unlike minitest.
+RSpec is a Ruby testing framework. It's a domain specific language (DSL) - not pure Ruby unlike MiniTest.
 
 Pros:
 
@@ -38,13 +45,9 @@ expect { post :action }.to change { Question.count }
 describe "GET #action" do
   before { get :action }
 
-  it "returns success" do
-    expect(response).to be_success
-  end
+  it { is_expected.to respond_with :success }
 
-  it "renders action template" do
-    expect(response).to render_template(:action)
-  end
+  it { is_expected.to render_template :action }
 end
 ```
 * Comes out the box with support for most tools you might need
@@ -87,6 +90,7 @@ end
   let!(:answer) { create(:answer) }
   ```
   * Hooks (before, after, around)
+  * Subject (object that you run tests against)
 
 Cons:
 
