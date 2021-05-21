@@ -118,7 +118,7 @@ end
   # spec/controllers/some_controller_spec.rb
   require "rails_helper"
 
-  describe 'SomeController', type: :controller do
+  RSpec.describe SomeController, type: :controller do
     describe "GET #action" do
       it_behaves_like "Generic action"
       
