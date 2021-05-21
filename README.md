@@ -200,16 +200,16 @@ feature "Admin can create reviews", %q(
     scenario "tries to create review" do
       fill_in "Title", with: "Newest Review"
       fill_in "Author", with: "Serge"
-      fill_in "Annotation", with: "yes, I am the author"
-      fill_in "Body", with: "Very cool"
+      fill_in "Annotation", with: "How amazing"
+      fill_in "Body", with: "I am super impressed, ten out of ten."
 
       click_button "Создать"
 
       expect(page).to have_content "Успешно добавлено."
 
-      expect(page).to have_content "newest review".upcase
-      expect(page).to have_content "me"
-      expect(page).to have_content "yes, I am the author"
+      expect(page).to have_content "Newest Review".upcase
+      expect(page).to have_content "Serge"
+      expect(page).to have_content "How amazing"
     end
 
     scenario "tries to create review with errors" do
