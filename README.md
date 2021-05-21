@@ -19,7 +19,7 @@ Similar to TDD, but includes extra steps to communicate with the non-technical p
 ### Unit tests
 
 Testing individual components of the software. Some people like to test every single thing possible.
-* We don't have any view tests, it is debatable whether they are needed or not.
+* We don't have any view tests, or have very little if you count system tests. it is debatable whether they are needed or not.
 ```ruby
 get :action
 assert_select 'h1', 'RSpec Talk'
@@ -169,6 +169,58 @@ Cons:
 * Takes longer to learn since it's not pure Ruby
 * It's way larger than minitest (implementation spans across 3 gems)
 * Tests take longer and leave a larger memory footprint - I was unable to find more info just how much slower, but signs point to not too much slower.
+
+## Integration test with Capybara and RSpec example
+
+```ruby
+require "rails_helper"
+
+feature "Admin can create reviews", %q(
+  In order to add new review to the site
+  As an admin
+  I want to be able to create reviews
+) do
+  given!(:admin) do
+    create(:admin, email: "admin@example.com", password: "123456")
+  end
+
+  scenario "User tries to create review" do
+    visit reviews_path
+    expect(page).to_not have_link "Добавить"
+  end
+
+
+  context "Admin", js: true do
+    background do
+      sign_in(admin)
+      visit reviews_path
+      click_link "Добавить"
+    end
+
+    scenario "tries to create review" do
+      fill_in "Title", with: "Newest Review"
+      fill_in "Author", with: "Serge"
+      fill_in "Annotation", with: "yes, I am the author"
+      fill_in "Body", with: "Very cool"
+
+      click_button "Создать"
+
+      expect(page).to have_content "Успешно добавлено."
+
+      expect(page).to have_content "newest review".upcase
+      expect(page).to have_content "me"
+      expect(page).to have_content "yes, I am the author"
+    end
+
+    scenario "tries to create review with errors" do
+      click_button "Создать"
+
+      expect(page).to have_content "error(s) detected"
+      expect(page).to have_content "can't be blank"
+    end
+  end
+end
+```
 
 ## Conclusion
 
