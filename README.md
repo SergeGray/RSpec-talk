@@ -1,4 +1,4 @@
-# RSpec-talk
+# RSpec Talk
 
 ## TDD - Test Driven Development
 This is a programming style where the tests are written as you write the code.
@@ -20,6 +20,10 @@ Similar to TDD, but includes extra steps to communicate with the non-technical p
 
 Testing individual components of the software. Some people like to test every single thing possible.
 * We don't have any view tests, it is debatable whether they are needed or not.
+```ruby
+get :action
+assert_select 'h1', 'RSpec Talk'
+```
 * Since we don't have any integration tests, it might be beneficial to test more stuff in the controllers (instance variable assignment, template rendering) via rails-controller-testing gem.
 ```ruby
 get :action
@@ -36,18 +40,40 @@ Outside of integration tests, our test coverage isn't bad, but there's certainly
 
 ## RSpec
 
-RSpec is a Ruby testing framework. It's a domain specific language (DSL) - not pure Ruby unlike MiniTest.
+RSpec is a Ruby testing framework. It's a domain specific language (DSL) - not pure Ruby unlike Minitest.
 
 Pros:
 
 * Syntax is very easy to understand
 ```ruby
+# Minitest
+assert_difference -> { Question.count } do
+  assert_difference "Answer.count", 2 do
+    assert_changes "Comment.count", from: 1, to: 4 do
+      post :action, params: question_params
+    end
+  end
+end
+
+# RSpec
 expect { post :action, params: question_params }.to change { Question.count }
-  .and change('Answer.count').by(2)
+  .and change("Answer.count").by(2)
   .and change(Comment, :count).from(1).to(4)
 ```
 * Nested context
 ```ruby
+# Minitest
+test "successful response" do
+  get :action
+  assert_response :success
+end
+
+test "renders template" do
+  get :action
+  assert_template :action # render_template is part of the rails-controller-testing gem
+end
+
+#RSpec
 describe "GET #action" do
   before { get :action }
 
@@ -59,15 +85,26 @@ end
 * Comes out the box with support for most tools you might need
   * Mocks, stubs, and doubles
   ```ruby
-  Model.stub(:method).with(true)
+  # Minitest
+  question.stub :method, true
   
-  allow(Model).to receive(:method).with(true).and_return(false)
-  expect(Model).to receive(:method).with(true).and_return(false)
+  method_stub = Minitest::Mock.new
+  method_stub.expect :method, false, [true]
+  question.stub :attribute, method_stub do
+    ...
+  end
   
-  model = double("Model", id: 1, name: "Generic Name")
+  # RSpec
+  question.stub(:method).with(true)
+  
+  allow(question).to receive(:method).with(true).and_return(false)
+  expect(question).to receive(:method).with(true).and_return(false)
+  
+  question = double("Question", id: 1, name: "Generic Name")
   ```
   * Shared tests
   ```ruby
+  # spec/shared/gemeric_action.rb
   require "rails_helper"
   
   RSpec.shared_examples_for "Generic action" do
@@ -76,11 +113,11 @@ end
       expect(response.status).to be_empty
     end
   end
-  ```
-  ```ruby
+  
+  # spec/controllers/some_controller_spec.rb
   require "rails_helper"
 
-  describe 'Controller', type: :controller do
+  describe 'SomeController', type: :controller do
     describe "GET #action" do
       it_behaves_like "Generic action"
       
