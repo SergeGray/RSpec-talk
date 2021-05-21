@@ -30,6 +30,7 @@ get :action
 assert_equal assigns(:variable), Model.last
 assert_template 'view/action`
 ```
+  * I had an example recently where I wanted to test whether something gets added to a hidden form field on page, which is outside the scope of our usual tests.
 * Something that we can improve on is unit test isolation. We don't want to test the same stuff multiple times in different places.
 
 ### Integration tests
