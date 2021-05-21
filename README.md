@@ -139,6 +139,17 @@ end
   ```
   * Hooks (before, after, around)
   ```ruby
+  # Minitest
+  
+  setup do
+    puts "before example"
+  end
+  
+  teardown do
+    puts "after example"
+  end
+  
+  # RSpec
   around do |example|
     puts "before example"
     example.run
