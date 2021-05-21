@@ -105,7 +105,7 @@ end
   ```
   * Shared tests
   ```ruby
-  # spec/shared/gemeric_action.rb
+  # spec/shared/generic_action.rb
   require "rails_helper"
   
   RSpec.shared_examples_for "Generic action" do
